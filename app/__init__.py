@@ -6,6 +6,16 @@ import joblib
 import numpy as np
 import database as dbase  # Importar la conexión de tu archivo database.py
 from pymongo import MongoClient
+import os
+
+# Especificar la ruta correcta de la carpeta templates
+app = Flask(
+    __name__,
+    template_folder=os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "templates"
+    ),
+)
+
 
 # Conectar a la base de datos local de MongoDB
 uri = "mongodb://localhost:27017/"
