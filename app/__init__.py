@@ -27,9 +27,6 @@ db = dbase.dbConnection()
 # Cargar el modelo entrenado
 model = joblib.load("iris_model.pkl")
 
-# Inicializar la aplicación Flask
-app = Flask(__name__)
-
 
 # Ruta principal para mostrar el formulario
 @app.route("/")
