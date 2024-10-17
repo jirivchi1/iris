@@ -1,1 +1,5 @@
- 
+# Archivos a ignorar en el repositorio
+.env
+__pycache__/
+*.pyc
+venv/

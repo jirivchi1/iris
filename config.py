@@ -1,1 +1,1 @@
- 
+# Configuraciones generales (entorno, variables)
