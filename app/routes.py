@@ -1,50 +1,63 @@
-# Rutas (endpoints) de la aplicación
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from .forms import LoginForm, SignupForm
-from .models import User
+from app.forms import LoginForm, SignupForm  # Import forms
+from app.models import User
 from pymongo import MongoClient
 
-# Conectar a la base de datos local de MongoDB
-uri = "mongodb://localhost:27017/"
-client = MongoClient(uri)
-db = client.iris_database
-
-# Crear el blueprint principal
+# Blueprint declaration
 main = Blueprint("main", __name__)
 
+# Connect to MongoDB
+client = MongoClient("mongodb://localhost:27017/")
+db = client.iris_database
 
+
+# Home route
 @main.route("/")
 @login_required
 def home():
     return render_template("index.html")
 
 
-@main.route("/predict", methods=["POST"])
+# Login route
+@main.route("/login", methods=["GET", "POST"])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db["users"].find_one({"username": form.username.data})
+        if user and check_password_hash(user["password"], form.password.data):
+            user_obj = User(user["_id"], user["username"], user["password"])
+            login_user(user_obj)
+            return redirect(url_for("main.home"))
+        else:
+            flash("Invalid username or password")
+    return render_template("login.html", form=form)
+
+
+# Signup route
+@main.route("/signup", methods=["GET", "POST"])
+def signup():
+    form = SignupForm()
+    if form.validate_on_submit():
+        existing_user = db["users"].find_one({"username": form.username.data})
+        if existing_user:
+            flash("Username already exists")
+        else:
+            hashed_password = generate_password_hash(
+                form.password.data, method="sha256"
+            )
+            db["users"].insert_one(
+                {"username": form.username.data, "password": hashed_password}
+            )
+            flash("Account created successfully. Please log in.")
+            return redirect(url_for("main.login"))
+    return render_template("signup.html", form=form)
+
+
+# Logout route
+@main.route("/logout")
 @login_required
-def predict():
-    sepal_length = float(request.form["sepal_length"])
-    sepal_width = float(request.form["sepal_width"])
-    petal_length = float(request.form["petal_length"])
-    petal_width = float(request.form["petal_width"])
-
-    # Crear el array de entrada para el modelo
-    input_data = [[sepal_length, sepal_width, petal_length, petal_width]]
-
-    # Modelo de predicción
-    model = joblib.load("iris_model.pkl")
-    prediction = model.predict(input_data)[0]
-
-    # Guardar la consulta en la base de datos
-    query = {
-        "sepal_length": sepal_length,
-        "sepal_width": sepal_width,
-        "petal_length": petal_length,
-        "petal_width": petal_width,
-        "predicted_species": prediction,
-        "user_id": current_user.id,
-    }
-    db["iris_queries"].insert_one(query)
-
-    return render_template("index.html", prediction=prediction)
+def logout():
+    logout_user()
+    return redirect(url_for("main.login"))

@@ -1,29 +1,24 @@
 from flask import Flask
 from flask_login import LoginManager
 from pymongo import MongoClient
-from routes import main
-from models import User
-from forms import LoginForm, SignupForm
+from app.routes import main  # Import your routes blueprint
+from app.models import User  # Import your user model
 
-# Inicializar la aplicación Flask
+# Initialize Flask app
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "your_secret_key"  # Cambia esto por una clave segura
+app.config["SECRET_KEY"] = "your_secret_key"  # Change this to something secure
 
-# Conectar a la base de datos local de MongoDB
-uri = "mongodb://localhost:27017/"
-client = MongoClient(uri)
+# Set up MongoDB connection
+client = MongoClient("mongodb://localhost:27017/")
 db = client.iris_database
 
-# Configurar Flask-Login
+# Set up Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "login"
-
-# Registrar el blueprint
-app.register_blueprint(main)
+login_manager.login_view = "main.login"  # Blueprint view for login
 
 
-# Cargar el usuario desde la base de datos
+# User loader for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
     user_data = db["users"].find_one({"_id": user_id})
@@ -32,6 +27,9 @@ def load_user(user_id):
     return None
 
 
-# Ejecutar la aplicación
+# Register the blueprint
+app.register_blueprint(main)
+
+# Run the application
 if __name__ == "__main__":
     app.run(debug=True, port=4000)

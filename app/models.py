@@ -1,1 +1,8 @@
-# Funciones de acceso a la base de datos y lógica del modelo
+from flask_login import UserMixin
+
+
+class User(UserMixin):
+    def __init__(self, user_id, username, password):
+        self.id = user_id
+        self.username = username
+        self.password_hash = password

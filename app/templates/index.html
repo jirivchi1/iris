@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Species Prediction</title>
+</head>
+<body>
+    <h1>Welcome {{ current_user.username }}!</h1>
+    <form method="POST" action="{{ url_for('main.predict') }}">
+        <label for="sepal_length">Sepal Length:</label>
+        <input type="text" name="sepal_length">
+        <label for="sepal_width">Sepal Width:</label>
+        <input type="text" name="sepal_width">
+        <label for="petal_length">Petal Length:</label>
+        <input type="text" name="petal_length">
+        <label for="petal_width">Petal Width:</label>
+        <input type="text" name="petal_width">
+        <button type="submit">Predict</button>
+    </form>
+</body>
+</html>

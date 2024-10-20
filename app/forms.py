@@ -3,21 +3,23 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length
 
 
+# Login form
 class LoginForm(FlaskForm):
     username = StringField(
-        "Nombre de Usuario", validators=[InputRequired(), Length(min=4, max=15)]
+        "Username", validators=[InputRequired(), Length(min=4, max=20)]
     )
     password = PasswordField(
-        "Contraseña", validators=[InputRequired(), Length(min=8, max=80)]
+        "Password", validators=[InputRequired(), Length(min=4, max=20)]
     )
-    submit = SubmitField("Iniciar Sesión")
+    submit = SubmitField("Login")
 
 
+# Signup form
 class SignupForm(FlaskForm):
     username = StringField(
-        "Nombre de Usuario", validators=[InputRequired(), Length(min=4, max=15)]
+        "Username", validators=[InputRequired(), Length(min=4, max=20)]
     )
     password = PasswordField(
-        "Contraseña", validators=[InputRequired(), Length(min=8, max=80)]
+        "Password", validators=[InputRequired(), Length(min=4, max=20)]
     )
-    submit = SubmitField("Registrarse")
+    submit = SubmitField("Signup")
